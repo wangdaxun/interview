@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 1.单例模式
+    // 需求：模拟实现LocalStorage中的set和get
+    // class版
+    class LocalStorage {
+      item = {};
+      static getInstance() {
+        if(!LocalStorage.instance) {
+          LocalStorage.instance = new LocalStorage();
+        }
+        return LocalStorage.instance;
+      }
+      getItem(key) {
+       return this.item[key];
+      }
+      setItem(key, value) {
+       this.item[key] = value;
+       console.log(this.item);
+      }
+    }
+    // localStorage.setItem("jkl", 111)
+    LocalStorage.getInstance().setItem("jkl", 111);
+    console.log(LocalStorage.getInstance().getItem("jkl"));
+    // 闭包版
+    const MyLocal = {
+      
+    }
+    function MyLocal() {
+      var s = 1;
+
+      (function getInstance() {
+        console.log(111);
+      }())
+    }
+    
+    my();
+    console.log(my);
+  </script>
+  <script>
+
+  </script>
+</body>
+</html>

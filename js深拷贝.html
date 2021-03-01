@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>js深拷贝</title>
+</head>
+<body>
+  <script>
+    // 0.直接拷贝
+    var obj = {
+      name: "jwr",
+      age: "9"
+    }
+    var objc = obj;
+    objc.age = 10;
+    console.log(obj);
+  </script>
+  <script>
+    // 1.JSON的方式
+    var obj1 = {
+      name: "jwr",
+      age: "9"
+    }
+    var parse = JSON.stringify(obj1);
+    var obj2 = JSON.parse(parse);
+    obj2.age = 10;
+    console.log(obj1);
+    console.log(obj2);
+  </script>
+  <script>
+    // 2.浅拷贝
+    var easyCopy = function(origin){
+      var target = new Object();
+      for(key in origin){
+        console.log(key);
+        target[key] = origin[key];
+      }
+      return target;
+    }
+    var obj3 = {
+      name: "jwr",
+      age: "9",
+      friends: {
+        zym: {
+          name: "智禹铭",
+          age: 10
+        },
+        hl: {
+          name: "韩亮",
+          age: 9
+        }
+      }
+    }
+    var obj4 = easyCopy(obj3);
+    obj4.age = 10;
+    obj3.friends.zym.age = 20;
+    console.log(obj3);
+    console.log(obj4);
+  </script>
+  <script>
+    // 3.使用深拷贝函数
+    var deepCopySim = function(origin){
+      if(typeof(origin) === "object"){
+        var target = {};
+        for(key in origin){
+          target[key] = deepCopySim(origin[key]);
+        }
+        return target;
+      }else{
+        return origin;
+      }
+    }
+    var obj5 = deepCopySim(obj3);
+    console.log(obj5);
+    var deepCopy = function(origin, target){
+      // 判断出是属于什么类型的
+      const type = typeof(origin);
+      if(type === "string" || type === "number" || type === "boolean"){
+        target = origin;
+      }
+    }
+
+    // var 
+  </script>
+  <script>
+    var reviewDeepCopySim = function(origin, map = new WeakMap()){
+      if(typeof(origin) === "object"){
+        let target =  Array.isArray(origin) ? [] : {};
+        console.log(map);
+        if(map.get(origin)){
+          return map.get(origin);
+        }
+        map.set(origin, target);
+        for(key in origin){
+          target[key] = reviewDeepCopySim(origin[key], map);
+        }
+        return target;
+      }else{
+        return origin;
+      }
+    }
+    // 性能优化：用while改写for in
+    // function foreach(obj, func){
+    //   let i = 0;
+    //   while(i++ < obj.length){
+    //     func()
+    //   }
+    // }
+    var obj6 = {
+      name: "jwr",
+      age: 9,
+      friends: {
+        hl: {
+          name: "韩亮",
+          age: 10
+        },
+        zym: {
+          name: "智禹铭",
+          age: 12
+        }
+      }
+    }
+    var obj7 = reviewDeepCopySim(obj6);
+    console.log(obj6);
+    console.log(obj7);
+  </script>
+  <script>
+    // 上面写的没有考虑数组的情况
+
+    var obj8 = {
+      name: "jwr",
+      age: 9,
+      hobbies: ["抽烟", "喝酒", "烫头"],
+      friends: [{
+        name: "韩亮",
+        age: 10
+      },{
+          name: "智禹铭",
+          age: 12
+        }
+      ]
+    }
+    var obj9 = reviewDeepCopySim(obj8);
+    obj9.hobbies = ["吃喝嫖赌抽"];
+    console.log(obj8);
+    console.log(obj9);
+    obj9.obj9 = obj9;
+    
+    var obj10 = reviewDeepCopySim(obj8);
+  </script>
+</body>
+</html>

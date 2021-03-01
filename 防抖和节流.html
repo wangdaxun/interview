@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <input type="text" id="search"/>
+  <script>
+    // 最初实现方式：
+    function debouce(method, wait, ...args){
+      // 防抖：一个方法在一段事件内被反复调用，通过这个防抖函数能够减少调用的次数，减少服务器的压力
+      let timeout;
+      return function() {
+        if(timeout) {
+          clearTimeout(timeout);
+        }
+        let context = this;
+        timeout = setTimeout(()=>{
+          method.apply(context, args);
+        },wait)
+      }
+    }
+    // 防抖立即执行版
+    function debouceNow(method, wait, ...args){
+      let timeout;
+      return function(){
+        let context = this;
+        let now = !timeout;
+        if(timeout) {
+          clearTimeout(timeout);
+        }
+        timeout = setTimeout(()=>{
+          timeout = null;
+        }, wait);
+        if(now){
+          method.apply(context, args);
+        }
+      }
+    }
+    function showInput(){
+      console.log(document.getElementById("search").value);
+    }
+    function searchInput(){
+      const s = document.getElementById("search");
+      s.oninput = debouceNow(showInput, 1000);
+    }
+
+    // 时间戳版
+    function throttleNow(method, wait, ...args){
+      let pre = 0;
+      return function() {
+        let now = Date.now();
+        let context = this;
+        if(now - pre >= wait) {
+          method.apply(context, args);
+          pre = Date.now();
+        }
+      }
+    }
+
+    // 延时器版
+    function throttle(method, wait, ...args) {
+      let timeout;
+      return function() {
+        const context = this;
+        if(!timeout){
+          timeout = setTimeout(()=>{
+            timeout = null;
+            method.call(context, args);
+          }, wait)    
+        }
+      }
+    }
+
+    // review
+    function rwDebouce(method, wait, ...args) {
+      let timer;
+      return function(){
+        if(timer){
+          clearTimeout(timer);
+        }
+        let context = this;
+        timer = setTimeout(()=>{
+          method.call(context, args);
+        }, wait);
+      }
+    }
+    searchInput();
+    
+
+    function reTh(method, wait, ...args) {
+      let timeout;
+      return function(){
+        let context = this;
+        if(!timeout){
+          timeout = setTimeout(()=>{
+            timeout = null;
+            method.call(context, args);
+          }, wait);
+        }
+      }
+    }
+
+  </script>
+
+</body>
+</html>

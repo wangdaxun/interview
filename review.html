@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    function extend(origin, target){
+      var temp = {};
+      temp.prototype = origin.prototype;
+      target.prototype = new temp();
+      target.prototype.constuctor = target;
+      target.prototype.uber = origin.prototype;
+    }
+    function deepCopy(origin, map = new Map()){
+      if(typeof(origin) === "object"){
+        var target = Array.isArray(origin) ? [] : {};
+        if(map.get(origin)){
+          return map.get(origin);
+        }
+        map.set(origin, target);
+        for(key in origin){
+          target[key] = deepCopy(origin[key], map);
+        }
+        return target;
+      }else{
+        return origin;
+      }
+    }
+    var obj8 = {
+      name: "jwr",
+      age: 9,
+      hobbies: ["抽烟", "喝酒", "烫头"],
+      friends: [{
+        name: "韩亮",
+        age: 10
+      },{
+          name: "智禹铭",
+          age: 12
+        }
+      ]
+    }
+    var obj9 = deepCopy(obj8);
+    console.log(obj8);
+    console.log(obj9);
+  </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- <script>
+    // 共享原型
+    function shareProto(origin, target){
+      target.prototype = origin.prototype;
+    }
+    let Car = function(){
+
+    }
+    Car.prototype.run = function(){
+      console.log("我在跑");
+    }
+    let SportsCar = function(){
+
+    }
+    shareProto(Car, SportsCar);
+    SportsCar.prototype.fly = function(){
+      console.log("我在飞");
+    }
+    let bmw = new Car();
+    let msld = new SportsCar();
+    bmw.run();
+    msld.fly();
+    bmw.fly();
+    Car.prototype.say = function(){
+      console.log("我说话了");
+    }
+    bmw.say();
+
+  </script> -->
+  <!-- <script>
+    // 圣杯模式，将共享原型加以改进，增加一个临时内存
+    function myExtend(origin, target){
+      var temp = function(){
+
+      }
+      temp.prototype = origin.prototype;
+      target.prototype = new temp();
+      target.prototype.constructor = target;
+      target.prototype.uber = origin.prototype;
+    }
+    
+    var Car = function(){
+    }
+    Car.prototype.run = function(){
+      console.log("我在跑");
+    }
+    var bmw = new Car();
+    bmw.run();
+    var SportsCar = function(){
+
+    }
+    myExtend(Car, SportsCar);
+    SportsCar.prototype.fly = function(){
+      console.log("我在飞");
+    }
+    var msld = new SportsCar();
+    msld.run();
+    msld.fly();
+    
+  </script> -->
+  <script>
+    // 复习
+    var Animal = function(){
+
+    }
+    Animal.prototype.say = function(){
+      console.log("我说话了");
+    }
+    // 采用闭包把变量变得无法访问
+    var reviewExtendNew = (function(){
+      var temp = function(){
+
+      }
+      return function(origin, target){
+        temp.prototype = origin.prototype;
+        target.prototype = new temp();
+        // 不修改这个构造者就是origin的
+        target.prototype.constructor = target;
+        // 
+        target.uber = target.prototype;
+      }
+    })()
+    // 使用闭包把变量保存起来
+    var reviewExtend = function(origin, target){
+      (function(){
+        var temp = function(){
+        }
+        temp.prototype = origin.prototype;
+        target.prototype = new temp();
+        // 不修改这个构造者就是origin的
+        target.prototype.constructor = target;
+        // 
+        target.prototype.uber = origin.prototype;
+      }())
+    }
+    var Cat = function(){
+
+    }
+    reviewExtend(Animal, Cat);
+    Cat.prototype.catch = function(){
+      console.log("疯狂乱抓");
+    }
+    var a1 = new Animal();
+    var c1 = new Cat();
+    a1.say();
+    c1.say();
+    c1.catch();
+  </script>
+  <script>
+    function rwDebounce(method, wait, ...args){
+      
+    }
+  </script>
+  <script>
+    // name, age, friend
+    let arr = ['a',12,3];
+    class Person{
+        constructor(x,y,z){
+          this.x = x;
+          this.y = y;
+          this.z = z;
+        }
+      
+    }
+    let person = new Person();
+    let i = 0;
+    for(x in person){
+      person[x] = arr[i]
+      i++;
+    }
+  </script>
+</body>
+</html>
