@@ -44,8 +44,262 @@
     my();
     console.log(my);
   </script>
-  <script>
+  <section>
+    <!-- 装饰器模式
+    不去关心它现有的业务逻辑是什么样的，而是对原有的功能进行拓展，只关心拓展出来的新功能如何实现
+    -->
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>按钮点击需求1.0</title>
+    </head>
+    <style>
+        #modal {
+            height: 200px;
+            width: 200px;
+            line-height: 200px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid black;
+            text-align: center;
+        }
+    </style>
+    <body>
+      <button id='open'>点击打开</button>
+      <button id='close'>关闭弹框</button>
+    </body>
+    <script>
+        // 弹框创建逻辑，这里我们复用了单例模式面试题的例子
+        const Modal = (function() {
+          let modal = null
+          return function() {
+                if(!modal) {
+                  modal = document.createElement('div')
+                  modal.innerHTML = '您还未登录哦~'
+                  modal.id = 'modal'
+                  modal.style.display = 'none'
+                  document.body.appendChild(modal)
+                }
+                return modal
+          }
+        })()
+        
+        // 点击打开按钮展示模态框
+        document.getElementById('open').addEventListener('click', function() {
+            // 未点击则不创建modal实例，避免不必要的内存占用
+          const modal = new Modal()
+          modal.style.display = 'block'
+        })
+        
+        // 点击关闭按钮隐藏模态框
+        document.getElementById('close').addEventListener('click', function() {
+          const modal = document.getElementById('modal')
+          if(modal) {
+              modal.style.display = 'none'
+          }
+        })
+    </script>
+    <script>
+      // 想要实现的逻辑是：我有一个按钮，点击按钮会显示模态框（基本要求），点击后按钮变灰，模态框文字为快去登录
+      const Model = (function(){
+        let model = null;
+        return function(){
+          if(!modal) {
+            modal = document.createElement('div')
+            modal.innerHTML = '您还未登录哦~'
+            modal.id = 'modal'
+            modal.style.display = 'none'
+            document.body.appendChild(modal)
+          }
+          return modal
+        }
+      }())
 
-  </script>
+      // 基本要求
+      function openWindow(){
+        let model = new Model();
+        model.style.display = 'block';
+      }
+
+      // 文字为快去登录
+      function changeOpenText(){
+        const btn = document.getElementById('open');
+        btn.innerText = "快去登录";
+      }
+
+      // 按钮变灰
+      function disableOpen(){
+        const btn = document.getElementById('open');
+        btn.style.display = true;
+      }
+
+      // open按钮修改总和
+      function changeOpenBtn(){
+        changeOpenText();
+        disableOpen();
+      }
+
+      document.getElementById('open').addEventListener('click', function() {
+        openWindow();
+        changeOpenBtn();
+      })
+
+      // ES6版，面向对象
+      // btn的基本对象
+      class openBtn {
+        openWindow() {
+          let model = new Model();
+          model.style.display = 'block';
+        }
+      }
+      
+      class Decorator {
+        constructor(open_button){
+          this.open_button = open_button;
+        }
+        // 文字为快去登录
+        changeOpenText(){
+          const btn = document.getElementById('open');
+          btn.innerText = "快去登录";
+        }
+
+        // 按钮变灰
+        disableOpen(){
+          const btn = document.getElementById('open');
+          btn.style.display = true;
+        }
+
+        // open按钮修改总和
+        changeOpenBtn(){
+          changeOpenText();
+          disableOpen();
+        }
+
+        clickBtn(){
+          // 老逻辑
+          this.open_button.openWindow();
+          // 装饰器上的逻辑
+          this.changeOpenBtn();
+        }
+      }
+      const openBtn = new openBtn();
+      const decorator = new Decorator(openBtn);
+    </script>
+    <script>
+      // ES7中作用在类上的装饰器
+      function OneBtnDecorator(target) {
+        target.hasDecorator = true
+  	    return target
+      }
+      @OneBtnDecorator
+      class OneBtn {
+
+      }
+
+      // ES7中作用在函数上的装饰器
+      function OneBtnMethodDecarator(target, name, descriptor) {
+        let originMethod = descriptor.value;
+        descriptor.value = function() {
+          console.log("执行了装饰器的方法");
+          return originMethod.apply(this, arguments);
+        }
+      }
+      class TheBtn {
+        @OneBtnMethodDecarator
+        showMaker() {
+          console.log("show");
+        }
+      }
+    </script>
+    <script>
+      // 装饰器模式的应用
+      // React中的装饰器:HOC(Higher Order Component)
+      // 高阶组件就是一个函数，且该函数接受一个组件作为参数，并返回一个新的组件。
+      const BorderHoc = WrappedComponent => class extends Component {
+        render() {
+          <div style={{ border: 'solid 1px red' }}>
+            <WrappedComponent />
+          </div>
+        }
+      }
+
+      @BorderHoc
+      class TargetComponent extends Component {
+        render() {
+          
+        }
+      }
+   </script>
+    </html>
+  </section>
+  <section>
+    <script>
+      // 适配器模式
+      // 自己的理解：为了去兼容各种各样的情况而写出一个统一的接口去适配各种情况
+      // 比如说我们现在的一个HttpUtil是这样的：
+      class HttpUtil {
+        getMethod(url) {
+          console.log("我做了get的操作");
+        }
+
+        postMethod(url) {
+          console.log("我做了post的操作");
+        }
+      }
+
+      // 然后之前有一个老版本的util:
+      function Ajax(type, url, data, success, failed) {
+        console.log("我做了一系列的操作");
+      }
+      // 这时我如果再想用新的util又不想改代码，就需要有一个适配器去兼容这个老版本
+      function AjaxAdapter(type, url, data, success, failed) {
+        let result;
+        try {
+          if(type == "GET") {
+            result = await HttpUtil.getMethod(url);
+          } else if(type == "POST") {
+            result = await HttpUtil.postMethod(url, data);
+          }
+          result.statusCode === 1 && success ? success(result) : failed(result.statusCode); 
+        } catch (error) {
+          if(failed) {
+            failed(error.statusCode);
+          }
+        }
+      }
+      function Ajax(type, url, data, success, failed) {
+        AjaxAdapter(type, url, data, success, failed);
+      }
+      // 个人的想法：这个模式或许适用于去兼容不同浏览器的不同
+      // axios中既可以在浏览器环境中使用又可以在node中使用就是因为使用了适配器模式
+      function getDefaultAdapter() {
+        var adapter;
+        // 判断当前是否是node环境
+        if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]') {
+          // 如果是node环境，调用node专属的http适配器
+          adapter = require('./adapters/http');
+        } else if (typeof XMLHttpRequest !== 'undefined') {
+          // 如果是浏览器环境，调用基于xhr的适配器
+          adapter = require('./adapters/xhr');
+        }
+        return adapter;
+      }
+      // Http适配器
+      module.exports = function httpAdapter(config) {
+        return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
+          // 具体逻辑
+        }
+      }
+      // xhr适配器
+      module.exports = function xhrAdapter(config) {
+        return new Promise(function dispatchXhrRequest(resolve, reject) {
+          // 具体逻辑
+        }
+      }
+    </script>
+  </section>
 </body>
 </html>
