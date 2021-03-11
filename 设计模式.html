@@ -288,16 +288,100 @@
         return adapter;
       }
       // Http适配器
-      module.exports = function httpAdapter(config) {
-        return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
-          // 具体逻辑
+      // module.exports = function httpAdapter(config) {
+      //   return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
+      //     // 具体逻辑
+      //   }
+      // }
+      // // xhr适配器
+      // module.exports = function xhrAdapter(config) {
+      //   return new Promise(function dispatchXhrRequest(resolve, reject) {
+      //     // 具体逻辑
+      //   }
+      // }
+    </script>
+  </section>
+  <section>
+    <!-- 观察者模式、发布，订阅者模式 -->
+    观察者模式和发布，订阅者模式的区别：观察者模式是发布者和订阅者之间存在着一定的关联性，发布者会直接触及到订阅者
+    而发布，订阅者模式是观察者和订阅者之间会存在着一个第三方的管理者，发布者不直接触碰到订阅者，而是通过第三方来完成实际
+    的通信的操作
+    观察者模式和发布-订阅模式之间的区别，在于是否存在第三方、发布者能否直接感知订阅者。
+    <script>
+      // 观察者模式示例代码
+      // 发布者基类
+      class Publisher {
+        constructor() {
+          this.observers = [];
+          console.log("Publisher created");
+        }
+        // 增加订阅者
+        add(observer) {
+          console.log("Publisher.add invoked");
+          this.observers.push(observer);
+        }
+        // 移除订阅者
+        remove(observer) {
+          console.log("Publisher.remove invoked");
+          this.observers.forEach((item, i)=>{
+            if(item === observer) {
+              this.observers.splice(i, 1);
+            }
+          })
+        }
+        // 通知每一个订阅者
+        notify() {
+          console.log("Publisher.remove invoked");
+          this.observers.forEach((observer)=>{
+            observer.update(this);
+          })
         }
       }
-      // xhr适配器
-      module.exports = function xhrAdapter(config) {
-        return new Promise(function dispatchXhrRequest(resolve, reject) {
-          // 具体逻辑
+      // 具体的需求文档(prd)发布类，继承发布者类
+      class PrdPublisher extends Publisher {
+        constructor() {
+          super();
+          // 初始化需求文档
+          this.prdState = null;
+          // 开发群
+          this.observers = [];
+          console.log("PrdPublisher created");
         }
+
+        getState() {
+          return this.prdState;
+        }
+
+        setState(state) {
+          this.prdState = state;
+          this.notify();
+        }
+      }
+      // 订阅者
+      // 订阅者基类
+      class Observer {
+        constructor() {
+          console.log("Observer created");
+        }
+        update() {
+          console.log("Observer.update invoked");
+        }
+      }
+      // 开发者类，继承订阅者
+      class DeveloperObserver extends Observer {
+        constructor() {
+          super();
+          this.prdState = {};
+        }
+        update(publisher) {
+          this.prdState = publisher.getState(); 
+          this.work();
+        }
+        work() {
+          const prd = this.prdState;
+          conosle.log("我要开始工作了");
+        }
+
       }
     </script>
   </section>
