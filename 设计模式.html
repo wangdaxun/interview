@@ -381,8 +381,48 @@
           const prd = this.prdState;
           conosle.log("我要开始工作了");
         }
-
       }
+      const d1 = new DeveloperObserver();
+      const d2 = new DeveloperObserver();
+      const d3 = new DeveloperObserver();
+      const productMaster = new PrdPublisher();
+      productMaster.observers.add(d1);
+      productMaster.observers.add(d2);
+      productMaster.observers.add(d3);
+      productMaster.setState({"title": "111", "body": "2222" });
+    </script>
+    <script>
+      // vue中的双向绑定（响应式原理）
+      // 这一块暂时不写，等学完所有的代码后回过头来再写
+    </script>
+    <script>
+      // Event Bus的简单实现
+      class Bus {
+        constructor() {
+          this.handler = {}
+        }
+        // 发布事件
+        $on(eventName, cb) {
+          if(!this.handler[eventName]) {
+            this.handler[eventName] = [];
+          }
+          this.handler[eventName].push(cb);
+        }
+        // 订阅事件
+        $emit(eventName, cb) {
+          if(this.handler[eventName]) {
+            this.handler[eventName].forEach((callback))
+          }
+        }
+        // 删除事件
+        $off(eventName, cb) {
+
+        }
+        // 用过一次就删除
+        $once(eventName, cb) {
+
+        }
+      } 
     </script>
   </section>
 </body>
