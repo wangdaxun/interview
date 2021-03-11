@@ -401,28 +401,75 @@
         constructor() {
           this.handler = {}
         }
-        // 发布事件
+        // 订阅（监听）事件
         $on(eventName, cb) {
           if(!this.handler[eventName]) {
             this.handler[eventName] = [];
           }
           this.handler[eventName].push(cb);
         }
-        // 订阅事件
-        $emit(eventName, cb) {
+        // 发布（触发）事件
+        $emit(eventName, ...args) {
           if(this.handler[eventName]) {
-            this.handler[eventName].forEach((callback))
+            this.handler[eventName].forEach((callback)=>{
+              callback(args);
+            })
           }
         }
-        // 删除事件
+        // 移除某个事件回调队列中指定的函数
         $off(eventName, cb) {
-
+          const callback = handler[eventName];
+          const index = callback.indexof(cb);
+          if(index !== -1) {
+            callback.splice(index, 1);
+          }
         }
-        // 用过一次就删除
+        // 只监听一次的事件，即用完就删除
         $once(eventName, cb) {
-
+          const callback = (...args)=> {
+            cb(...args);
+            this.$off(eventName, callback);
+          }
+          this.on(eventName, callback);
         }
       } 
+    </script>
+  </section>
+  <section>
+    <!-- 策略模式：定义一系列得算法，把它们一个个封装起来，并且使它们可相互替换 -->
+    <!-- 不直接怼if-else，而要考虑更优得映射方案 -->
+    <!-- 当价格类型为“预售价”时，满 100 - 20，不满 100 打 9 折
+    当价格类型为“大促价”时，满 100 - 30，不满 100 打 8 折
+    当价格类型为“返场价”时，满 200 - 50，不叠加
+    当价格类型为“尝鲜价”时，直接打 5 折 -->
+    <script>
+      const priceProcessor = {
+        pre(originPrice) {
+          return originPrice * 0.9;
+        },
+        onSale(originPrice) {
+          return originPrice * 0.8;
+        },
+        back(originPrice) {
+          return originPrice - 50;
+        },
+        frech(originPrice) {
+          return originPrice * 0.5;
+        }
+      }
+      function askPrice(tag, originPrice) {
+        return priceProcessor[tag](originPrice);
+      }
+      // 自己搞得另外一种套路，用了这一招解决了一个特别烦人得问题
+      const priceMap = new Map();
+      priceMap.set(pre, (originPrice)=>{
+        return originPrice * 0.9;
+      })
+      function askPriceMap(tag, originPrice) {
+        priceMap.get(tag)(originPrice);
+      }
+      // 策略模式
+      
     </script>
   </section>
 </body>
