@@ -432,7 +432,7 @@
           }
           this.on(eventName, callback);
         }
-      } 
+      }   
     </script>
   </section>
   <section>
@@ -469,8 +469,207 @@
         priceMap.get(tag)(originPrice);
       }
       // 策略模式
-      
+      // 定义一系列的算法，把它们一个个封装起来，并且使它们可相互替换。
     </script>
+  </section>
+  <section>
+    <!-- 状态模式 -->
+    <script>
+      const stateToProcessor = {
+        american() {
+          console.log("黑咖啡");
+        },
+        latte() {
+          american();
+          console.log("加点奶");
+        },
+        vanillaLatte() {
+          american();
+          latte();
+          console.log("再加香草奶精");
+        },
+        mocha() {
+          american();
+          console.log("再加巧克力");
+        }
+      }
+      class CoffeeMaker {
+        constructor() {
+          this.state = 'init'
+        }
+        changeState(state) {
+          this.state = state;
+          if(!stateToProcessor[state]) {
+            return;
+          }
+          stateToProcessor[state]();
+        } 
+      }
+      const mk = new CoffeeMaker();
+      mk.changeState('vanillaLatte');
+      // 上面的这种方式主体和行为函数并没有关联，感受不到咖啡机的内部状况
+      // 状态模式中的行为函数，首先是和状态主体之间存在着关联，由状态主体把它们串再一起；另一方面，正因为关联
+      // 着同样的一个（或一类）主体，所以不同状态对应的行为函数可能并不会特别割裂
+      // 将每一个状态所对应的的一些行为抽象成类，然后通过传递 this 的方式来关联状态和状态主体。
+      class CoffeeMaker {
+        constructor() {
+          this.state = 'init';
+          this.leftMilk = '500ml';
+        }
+        stateToProcessor = {
+          that: this,
+          american() {
+            console.log("咖啡机剩余的容量为："+this.that.leftMilk);
+            console.log("黑咖啡");
+          },
+          latte() {
+            american();
+            console.log("加点奶");
+          },
+          vanillaLatte() {
+            american();
+            latte();
+            console.log("再加香草奶精");
+          },
+          mocha() {
+            american();
+            console.log("再加巧克力");
+          }
+        }
+        changeState(state) {
+          this.state = state;
+          if(!stateToProcessor[state]) {
+            return;
+          }
+          stateToProcessor[state]();
+        } 
+      }
+      const mk = new CoffeeMaker();
+      mk.changeState('vanillaLatte');
+      // 状态模式：允许一个对象在其内部状态改变它的行为，对象看起来似乎修改了它的类
+      // 主要解决的是当控制一个对象状态的条件表达式过于复杂时的情况。把状态的判断逻辑转移到表示不同状态的一系列类中，可以把
+      // 复杂的判断逻辑简化
+    </script>
+  </section>
+  <section>
+    <!-- 代理模式 -->
+    <script>
+      // 用户（同事A）对象实例
+      const user = {
+          isValidated: true,
+          isVIP: false,
+      }
+      // 为用户增开presents字段存储礼物
+      const girl = {
+        // 姓名
+        name: '小美',
+        // 自我介绍
+        aboutMe: '...',
+        // 年龄
+        age: 24,
+        // 职业
+        career: 'teacher',
+        // 假头像
+        fakeAvatar: 'xxxx',
+        // 真实头像
+        avatar: 'xxxx',
+        // 手机号
+        phone: 123456,
+        // 礼物数组
+        presents: [],
+        // 拒收50块以下的礼物
+        bottomValue: 50,
+        // 记录最近一次收到的礼物
+        lastPresent: present,
+      }
+      const basicInfo = ["name", "aboutMe"];
+      const privateInfo = ["avatoar", "phone"];
+      const JuejinLovers = new Proxy(girl, {
+        get: function(girl, key) {
+          if(basicInfo.indexOf(key) !== -1 && !user.isValidated) {
+            alert('您还没有完成验证！');
+            return;
+          }
+          if(privateInfo.indexOf(key) !== -1 && !user.isValidated && !user.isVIP) {
+            alert('只有VIP才可以查看该信息哦');
+            return;
+          }
+        },
+        set: function(girl, key, val) {
+          if(key === 'lastPresent') {
+            if(key.value < girl.bottomValue) {
+              alert("礼物金额太低，已被拒收");
+              return;
+            }
+            girl.lastPresent = val;
+            girl.presents = [...girl.presents, val];
+          }
+        }
+      });
+      console.log(JuejinLovers.girl.name);
+      JuejinLovers.girl.lastPresent = {
+        name: "口红",
+        value: 6000
+      };
+      // 代理模式：在某些情况下，出于种种考虑/限制，一个对象不能直接访问另一个对象，需要一个第三者（代理）牵线搭桥
+      // 从而间接达到访问目的，这样的模式就是代理模式
+      // 事件代理
+      <div id="father">
+        <a href="#">链接1号</a>
+        <a href="#">链接2号</a>
+        <a href="#">链接3号</a>
+        <a href="#">链接4号</a>
+        <a href="#">链接5号</a>
+        <a href="#">链接6号</a>
+      </div>
+      document.getElementById("father").addEventListener("click", function(e) {
+        if(e.target.tagName === 'A') {
+          e.preventDefault();
+          alert(`我是：${e.target.innerText}`);
+        }
+      })
+      // 虚拟代理
+      // 图片预加载
+      class PreLoadImg {
+        static LOADING_URL = 'xxxxxxxx';
+        constructor(imgNode) {
+          this.imgNode = imgNode;
+        }
+        setSrc(targetUrl) {
+          this.imgNode.src = PreLoadImg.LOADING_URL;
+          const img = new Image();
+          img.onload = () => {
+            this.imgNode.src = targetUrl;
+          }
+          img.src = targetUrl;
+        } 
+      }
+      // 上面的操作没有进行职责单一处理
+      class PreLoadImg {
+        constructor(imgNode) {
+          this.imgNode = imgNode;
+        }
+        setSrc(targetUrl) {
+          this.imgNode.src = targetUrl;
+        }
+      }
+
+      class ProxyLoadImg {
+        static LOADING_URL = "xxxxxxxxx";
+        constructor(targetImg) {
+          this.targetImg = targetImg;
+        }
+        setSrc(targetUrl) {
+          targetImg.src = this.LOADING_URL;
+          const virtualImg = new Image();
+          virtualImg.onload = ()=> {
+            this.targetImg.src = targetUrl;
+          }
+          virtualImg.src = targetUrl;
+        }
+      }
+
+  </script>
   </section>
 </body>
 </html>
