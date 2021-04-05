@@ -14,17 +14,20 @@
     }
     // 这个代码明天要再写一遍
     function defineReactive(obj, key, val) {
+      const dep = new Dep();
       Object.defineProperty(obj, key, {
         enumerable: true,       /* 属性可枚举 */
         configurable: true,     /* 属性可被修改或删除 */
         get: function reactiveGetter() {
+          dep.addSub(Dep.target)
           return val;
         },
         set: function reactiveSetter(newVal) {
           if(newVal === val) {
             return;
           }
-          cb(newVal);
+          val = newVal;
+          dep.notify();
         }
       })  
     }
@@ -36,19 +39,91 @@
         defineReactive(value, key, value[key]);
       })
     }
+    class Dep {
+      constructor() {
+        this.subs = [];
+      }
+      addSub(sub) {
+        this.subs.push(sub);
+        console.log(this.subs);
+      }
+      notify() {
+        this.subs.forEach((sub)=>{
+          sub.update();
+        })
+      }
+    }
+    class Watcher {
+      constructor() {
+        Dep.target = this;
+      }
+      update() {
+        console.log("视图更新啦~");
+      }
+    }
+
+    class VNode {
+      constructor(tag, data, children, text, elm) {
+        /* 当前节点的标签名 */
+        this.tag = tag;
+        /* 当前节点的一些数据信息，比如props、attrs等数据 */
+        this.data = data;
+        /* 当前节点的子节点，是一个数组 */
+        this.children = children;
+        /* 当前节点的文本 */
+        this.text = text;
+        /* 当前虚拟节点对应的真实dom节点 */
+        this.elm = elm;
+      }
+    }
+
+    let o1 = new Vue({
+      data: globalObj,
+      template: 
+      `<div class="demo" v-show="isshow">
+        This is a div
+      </div>`
+    });
+    // 转换成js代码是这样的：
+    function render() {
+      return new VNode(
+        'div',
+        {
+          /* 指令集合数组  */
+          directives: [
+            {
+              /* v-show指令 */
+              rawName: 'v-show',
+              expression: 'isShow',
+              name: 'show',
+              value: true
+            }
+          ],
+          staticClass: 'demo'
+        },
+        [new VNode(undefined, undefined, undefined, 'This is a div')]
+      )
+    }
+  
     class Vue {
       constructor(options) {
         this._data = options.data;
         observer(this._data);
+        console.log(111);
+        new Watcher();
       }
     }
-    let o = new Vue({
-      data: {
-        jwr: "鞠卫儿"
-      }
-    })
-    console.log(o);
-    o._data.jwr = "好儿子";
+    let globalObj = {
+      jwr: "好儿子"
+    }
+    let o2 = new Vue({
+      data: globalObj
+    });
+    console.log(o1);
+    console.log(o2);
+    Dep.target = null;
+    // o._data.jwr = "好儿子";
+
   </script>
 </body>
 </html>

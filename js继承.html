@@ -137,5 +137,19 @@
       i++;
     }
   </script>
+  <script>
+    function myExtend(origin, target) {
+      var temp = {
+
+      };
+      temp.prototype = origin.prototype;
+      target.prototype = new temp();
+      target.prototype.constructor = target;
+      target.prototype.uber = target.prototype;
+    }
+    function myExtend(origin, target) {
+         
+    }
+  </script>
 </body>
 </html>
